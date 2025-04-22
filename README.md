@@ -1,0 +1,2 @@
+# lukaprediksi
+predikilukacnn
