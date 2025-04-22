@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Prediksi Luka Luar</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Prediksi Jenis Luka</h1>
+        
+        <div class="upload-section">
+            <input type="file" id="imageInput" accept="image/*">
+            <div class="preview-container">
+                <img id="imagePreview" src="#" alt="Image Preview" class="hidden">
+            </div>
+            <button class="upload-btn" onclick="uploadImage()">Prediksi Sekarang</button>
+        </div>
+
+        <div class="result-section hidden" id="resultSection">
+            <h2>Hasil Prediksi:</h2>
+            <div class="result-item">
+                <p>Jenis Luka: <span id="predictionResult">-</span></p>
+                <p>Akurasi: <span id="confidenceResult">-</span></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Preview gambar sebelum upload
+        document.getElementById('imageInput').addEventListener('change', function(e) {
+            const reader = new FileReader();
+            reader.onload = function() {
+                const preview = document.getElementById('imagePreview');
+                preview.src = reader.result;
+                preview.classList.remove('hidden');
+            }
+            reader.readAsDataURL(e.target.files[0]);
+        });
+
+        // Fungsi untuk upload gambar
+        async function uploadImage() {
+            const fileInput = document.getElementById('imageInput');
+            const resultSection = document.getElementById('resultSection');
+            
+            const formData = new FormData();
+            formData.append('image', fileInput.files[0]);
+
+            try {
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                document.getElementById('predictionResult').textContent = data.prediction;
+                document.getElementById('confidenceResult').textContent = data.confidence;
+                resultSection.classList.remove('hidden');
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+    </script>
+</body>
+</html>
